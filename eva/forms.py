@@ -22,7 +22,7 @@
 
 A simple wrapper for WTForms_.
 
-Basically we only need to map the request handler's `arguments` to the 
+Basically we only need to map the request handler's `arguments` to the
 `wtforms.form.Form` input. Quick example::
 
     from wtforms import TextField, validators
@@ -75,7 +75,8 @@ class Form(wtForm):
 
         HTML = u'<ul class="form-item-error text-danger">'
         for error in field.errors:
-            HTML += u'<li>{0}</li>'.format( unicode(error) )
+            # HTML += u'<li>{0}</li>'.format( unicode(error) )
+            HTML += '<li>{0}</li>'.format(error)
         HTML += u'</ul>'
 
         return HTML
@@ -97,4 +98,3 @@ class TornadoInputWrapper(object):
 
     def getlist(self, name):
         return self._handler.get_arguments(name)
-

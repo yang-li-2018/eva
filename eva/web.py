@@ -2,18 +2,26 @@ import json
 import datetime
 import logging
 import pprint
+import functools
 
 import tornado.web
 from tornado.escape import json_decode
 from tornado.web import decode_signed_value
-from tornado.log import access_log, app_log, gen_log
+from tornado.log import app_log, gen_log
+from tornado import httputil
 
 # Import eva module
-from eva.conf import settings
 from eva.exceptions import EvaError
 
 # TODO: settings 里解决
 from app.auth.models import Session
+
+# 定制 JSON Encoder
+# http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy
+# https://docs.djangoproject.com/en/1.8/topics/serialization/
+from eva.utils.functional import Promise
+from eva.utils.encoding import force_text
+from eva.core.serializers.json import DjangoJSONEncoder
 
 
 class APIRequestHandler(tornado.web.RequestHandler):
@@ -65,7 +73,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     sid = decode_signed_value(secret, "Sid", x[1])
                     if not sid:
                         logging.warning("fake sid!")
-                        #FIXME!
+                        # FIXME!
                         # raise HTTPError(403, reason="fake_sid")
                         return
                     sid = sid.decode()
@@ -78,7 +86,8 @@ class APIRequestHandler(tornado.web.RequestHandler):
                         else:
                             # FIXME!
                             # raise HTTPError(403, reason="session_expired")
-                            logging.warn('%s: session is expired', s.user.username)
+                            logging.warn('%s: session is expired',
+                                         s.user.username)
 
     def write_error(self, status_code, **kwargs):
         """定制出错返回
@@ -136,10 +145,8 @@ class APIRequestHandler(tornado.web.RequestHandler):
             pprint.pprint(json_body)
         else:
             print(self.request.body)
-        #print("\n")
+        # print("\n")
 
-
-import functools
 
 def authenticated(method):
     @functools.wraps(method)
@@ -203,14 +210,8 @@ class HTTPError(Exception):
             return message
 
 
-## 定制 JSON Encoder
-# http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy
-# https://docs.djangoproject.com/en/1.8/topics/serialization/
-from eva.utils.functional import Promise
-from eva.utils.encoding import force_text
-from eva.core.serializers.json import DjangoJSONEncoder
-
 class LazyJSONEncoder(DjangoJSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, Promise):
             return force_text(obj)
