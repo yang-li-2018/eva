@@ -2,14 +2,13 @@
 
 import datetime
 
-from sqlalchemy import Column, Integer, String, Unicode, \
+from sqlalchemy import Column, Integer, String, \
     Sequence, DateTime, Table, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship, backref
 
 from eva.utils.translation import ugettext_lazy as _
 from eva.orm import ORMBase
 from eva.db.models import UIDMixin
-from eva.utils.markup import generate_html
 from eva.utils.time_ import rfc3339_string
 
 
@@ -105,7 +104,8 @@ class BlogCatalog(UIDMixin, ORMBase):
     created = Column(DateTime, default=datetime.datetime.utcnow)
     updated = Column(DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, user, name, parent=None, summary='', body='', body_markup=1):
+    def __init__(self, user, name, parent=None, summary='',
+                 body='', body_markup=1):
         self.user_id = user.id
         self.name = name
         if parent:
@@ -113,10 +113,6 @@ class BlogCatalog(UIDMixin, ORMBase):
         self.summary = summary
         self.body = body
         self.body_markup = body_markup
-
-    @property
-    def body_html(self):
-        return generate_html(self.body, self.body_markup)
 
     @property
     def isimple(self):
@@ -213,10 +209,6 @@ class BlogArticle(UIDMixin, ORMBase):
         if catalog:
             self.catalog_id = catalog.id
 
-    @property
-    def body_html(self):
-        return generate_html(self.body, self.body_markup)
-
     def increase_comment_count(self):
         if self.comment_count:
             self.comment_count += 1
@@ -294,10 +286,6 @@ class BlogComment(UIDMixin, ORMBase):
         if parent:
             self.parent_id = parent.id
 
-    @property
-    def body_html(self):
-        return generate_html(self.body, self.body_markup)
-
     def to_vote(self, vote):
         if vote > 0:
             self.vote_up += vote
@@ -342,7 +330,7 @@ class BlogVote(UIDMixin, ORMBase):
         self.user_id = user.id
         self.vote = vote
 
-        target_id = target.id
+        self.target_id = target.id
         if isinstance(target, BlogArticle):
             self.target_type = 1
         elif isinstance(target, BlogComment):
@@ -383,10 +371,6 @@ class BlogTag(UIDMixin, ORMBase):
         self.summary = summary
         self.body = body
         self.body_markup = body_markup
-
-    @property
-    def body_html(self):
-        return generate_html(self.body, self.body_markup)
 
     @property
     def iuser(self):
