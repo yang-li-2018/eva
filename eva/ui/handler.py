@@ -1,5 +1,7 @@
 import logging
 import tornado.web
+import tornado.httpclient
+from tornado.web import asynchronous
 from mako.exceptions import RichTraceback
 
 from eva.conf import settings
@@ -95,7 +97,7 @@ class RequestHandler(tornado.web.RequestHandler):
     @property
     def api(self):
         if not self._api:
-            self._api = API(url_prefix='http://127.0.0.1:3000',
+            self._api = API(url_prefix=settings.API_URL_PREFIX,
                             sid=self.get_cookie('SID'))
         return self._api
 
@@ -119,3 +121,80 @@ class RequestHandler(tornado.web.RequestHandler):
         if hasattr(profile, 'error'):
             return None
         return profile
+
+
+
+class ForwardingRequestHandler(tornado.web.RequestHandler):
+    '''转发处理
+    '''
+
+    def initialize(self, host, port, permanent=True):
+        self._host = host
+        self._port = port
+        self._permanent = permanent
+
+    def prepare(self):
+        self._uri = "/" + self.path_args[0]
+
+    @asynchronous
+    def get(self, uri):
+        self.forward(host=self._host, port=self._port, uri=self._uri)
+
+    @asynchronous
+    def post(self, uri):
+        self.forward(host=self._host, port=self._port, uri=self._uri)
+
+    @asynchronous
+    def put(self, uri):
+        self.forward(host=self._host, port=self._port, uri=self._uri)
+
+    @asynchronous
+    def delete(self, uri):
+        self.forward(host=self._host, port=self._port, uri=self._uri)
+
+    def handle_response(self, response):
+        if response.error and not isinstance(response.error,
+                                             tornado.httpclient.HTTPError):
+            logging.error("response has error %s", response.error)
+            self.set_status(500)
+            self.write("Internal server error:\n" +
+                       str(response.error))
+            self.finish()
+        else:
+            self.set_status(response.code)
+            for header in ("Date", "Cache-Control", "Server", "Content-Type", "Location"):
+                v = response.headers.get(header)
+                if v:
+                    self.set_header(header, v)
+            if response.body:
+                self.write(response.body)
+            self.finish()
+
+    def forward(self, host=None, port=None, uri=None):
+        try:
+            tornado.httpclient.AsyncHTTPClient().fetch(
+                tornado.httpclient.HTTPRequest(
+                    url="%s://%s:%s%s" % (
+                        self.request.protocol, host or "127.0.0.1",
+                        port or 3000, uri or self.request.uri),
+                    method=self.request.method,
+                    body=self.request.body,
+                    headers=self.request.headers,
+                    allow_nonstandard_methods=True,
+                    follow_redirects=False),
+                self.handle_response)
+        except tornado.httpclient.HTTPError as x:
+            logging.error("tornado signalled HTTPError %s", x)
+            if hasattr(x, response) and x.response:
+                self.handle_response(x.response)
+        except tornado.httpclient.CurlError as x:
+            logging.error("tornado signalled CurlError %s", x)
+            self.set_status(500)
+            self.write("Internal server error:\n" +
+                       ''.join(traceback.format_exception(*sys.exc_info())))
+            self.finish()
+        except:
+            self.set_status(500)
+            self.write("Internal server error:\n" +
+                       ''.join(traceback.format_exception(*sys.exc_info())))
+            self.finish()
