@@ -56,10 +56,6 @@ def get_site_handlers():
     handlers = []
 
     for app_name in settings.INSTALLED_APPS:
-        app_urls = get_app_submodule( app_name, 'urls' )
-        if app_urls:
-            if hasattr(app_urls, 'handlers'):
-                handlers.extend( app_urls.handlers )
 
         # 是否启动 static 服务。生产环境中，通常由 nginx 等提供该服务
         if settings.ENABLE_STATIC_SERVE:
@@ -77,6 +73,12 @@ def get_site_handlers():
                                      tornado.web.StaticFileHandler,
                                      {"path": static_path} )
                 )
+
+        # 注意，tornado 的 URL 匹配是按顺序进行的， static 放前面是为了匹配到即可终止
+        app_urls = get_app_submodule( app_name, 'urls' )
+        if app_urls:
+            if hasattr(app_urls, 'handlers'):
+                handlers.extend( app_urls.handlers )
 
     return handlers
 
