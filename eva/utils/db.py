@@ -9,6 +9,7 @@ def get_db_uri():
 
     '''获取数据库访问接口
 
+    http://docs.sqlalchemy.org/en/latest/core/engines.html
     '''
 
     DB = settings.DB
@@ -26,11 +27,9 @@ def get_db_uri():
         DB['path'] = path
         DB_URI = '{engine}:///{path}'
 
-    elif engine == 'postgresql+psycopg2':
+    else:
         DB_URI = '{engine}://{username}:{password}' + \
                  '@{host}/{database}'
 
-    else:
-        raise WebDBError
 
     return DB_URI.format(**settings.DB)
