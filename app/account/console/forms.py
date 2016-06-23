@@ -24,6 +24,7 @@ class ProfileEditForm(Form):
     last_name = StringField(_("Last Name"))
     gender = SelectField(_('Gender'), choices=GENDER_CHOICES, default="secret")
     language = SelectField(_('Language'), choices=settings.LANGUAGES, default="en")
+    password = PasswordField(_("Password"))
 
 
 class PasswordResetForm(Form):

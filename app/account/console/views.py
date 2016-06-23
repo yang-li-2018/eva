@@ -36,6 +36,13 @@ class MyProfile(APIRequestHandler):
         if not form.language.is_missing:
             user.language = form.language.data
 
+        # TODO: 修改密码是否需要单独，并且提供旧密码？
+        if not form.password.is_missing:
+            user.set_password(form.password.data)
+            # Delete all old sessions, user need resignin.
+            for s in user.sessions:
+                self.db.delete(s)
+
         self.db.commit()
         self.success()
 
