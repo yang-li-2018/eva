@@ -16,7 +16,7 @@ class _SingleUserBaseHandler(APIRequestHandler):
         self.user = self.db.query(User).filter_by(uid=self.path_args[0]).one()
 
 
-class UserProfile(_SingleUserBaseHandler):
+class SingleUserProfileHandler(_SingleUserBaseHandler):
 
     def get(self, uid):
         '''获取用户信息
@@ -48,7 +48,7 @@ class UserProfile(_SingleUserBaseHandler):
         self.success()
 
 
-class UserPasswordReset(_SingleUserBaseHandler):
+class SingleUserPasswordHandler(_SingleUserBaseHandler):
 
     def put(self):
         '''重置用户密码'''
@@ -70,16 +70,20 @@ class UserPasswordReset(_SingleUserBaseHandler):
         self.success()
 
 
-class UserHandler(_SingleUserBaseHandler):
+class SingleUserHandler(_SingleUserBaseHandler):
 
-    @administrator
-    def delete(self, id):
+    def get(self, uid):
+        '''查看用户'''
+        # TODO
+        self.success(**self.user.iadmin)
+
+    def delete(self, uid):
         '''删除用户'''
         # 只能设置用户为已删除状态
         pass
 
 
-class UsersHandler(APIRequestHandler):
+class UserHandler(APIRequestHandler):
 
     @administrator
     def get(self):
