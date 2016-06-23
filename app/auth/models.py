@@ -114,12 +114,13 @@ class User(ORMBase):
 
     @property
     def ibase(self):
+        # TODO: showname
         return {
             'id': self.uid,
             'username': self.username,
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'nickname': self.nickname,
+            'nickname': self.nickname if self.nickname else self.username,
             'email': self.email,
             'gender': self.gender,
             'is_staff': self.is_staff,
