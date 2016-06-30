@@ -128,13 +128,16 @@ class ForwardingRequestHandler(tornado.web.RequestHandler):
     '''转发处理
     '''
 
-    def initialize(self, host, port, permanent=True):
+    def initialize(self, host, port, permanent=True, url_prefix='/'):
         self._host = host
         self._port = port
         self._permanent = permanent
+        self._uri_prefix = url_prefix
 
     def prepare(self):
-        self._uri = "/" + self.path_args[0]
+        self._uri = self._uri_prefix + self.path_args[0]
+        if self.request.query:
+            self._uri = self._uri + '?' + self.request.query
 
     @asynchronous
     def get(self, uri):
