@@ -15,6 +15,7 @@ from app.blog.models import (
     BlogCategory,
     BlogCatalog,
     BlogArticle,
+    BlogComment,
     BlogTag
 )
 from .forms import (
@@ -57,6 +58,29 @@ class APIRequestHandler(_APIRequestHandler):
 
     def get_my_tag(self, uid):
         return self.get_my_obj(BlogTag, uid)
+
+
+class StatisticsHandler(APIRequestHandler):
+
+    @authenticated
+    def get(self):
+        '''获取用户博客详情'''
+
+        catalog = self.db.query(BlogCatalog.id).filter_by(
+            user_id=self.current_user.id).count()
+        article = self.db.query(BlogArticle.id).filter_by(
+            user_id=self.current_user.id).count()
+        tag = self.db.query(BlogTag.id).filter_by(
+            user_id=self.current_user.id).count()
+        comment = self.db.query(BlogComment.id).filter_by(
+            user_id=self.current_user.id).count()
+
+        self.success(**{
+            "catalog": catalog,
+            "article": article,
+            "tag": tag,
+            "comment": comment,
+        })
 
 
 class CatalogHandler(APIRequestHandler):

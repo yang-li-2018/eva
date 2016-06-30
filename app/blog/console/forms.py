@@ -63,11 +63,8 @@ class ArticleBaseForm(Form):
 
 class ArticleNewForm(ArticleBaseForm):
 
-    title = StringField(_("Title"), validators=[
-        validators.DataRequired(),
-        validators.Length(min=2, max=128)])
-    body = TextField(_("Body"), validators=[
-        validators.DataRequired()])
+    title = StringField(_("Title"))
+    body = TextField(_("Body"))
 
 
 class ArticleEditForm(ArticleBaseForm):

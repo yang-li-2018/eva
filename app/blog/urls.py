@@ -12,6 +12,7 @@ handlers = [
     url(r'/blog/article/([\-0-9a-zA-Z]+)', user_views.SingleArticleHandler),
 
     # console
+    url(r'/console/blog/statistics', console_views.StatisticsHandler),
     url(r'/console/blog/catalog', console_views.CatalogHandler),
     url(r'/console/blog/catalog/([\-0-9a-zA-Z]+)', console_views.SingleCatalogHandler),
     url(r'/console/blog/article', console_views.ArticleHandler),
