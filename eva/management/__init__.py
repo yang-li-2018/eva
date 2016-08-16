@@ -105,6 +105,9 @@ Example:
 
     # 同步/创建/初始化数据库
     python3 manage.py core syncdb --db-echo
+
+    # core 类型的 namespace 可以省略，因此上一条命令等于
+    python3 manage.py syncdb --db-echo
 ''')
 
 
@@ -112,16 +115,27 @@ def main(argv=sys.argv[1:]):
 
     load_commands()
 
-    if len(argv) < 2:
+    if len(argv) < 1:
         print_usage()
         sys.exit(1)
 
-    basename = argv[0]
-    cmd = argv[1]
+    namespace = argv[0]
+
+    # nice hack!
+    if namespace.startswith('app.') or namespace == 'core':
+        if len(argv) < 2:
+            print_usage()
+            sys.exit(1)
+        else:
+            cmd = argv[1]
+    else:
+        namespace = 'core'
+        cmd = argv[0]
+
     global MAP_COMMANDS
 
-    if basename in MAP_COMMANDS:
-        cmds = MAP_COMMANDS[basename]
+    if namespace in MAP_COMMANDS:
+        cmds = MAP_COMMANDS[namespace]
         if cmd in cmds:
             argv = argv[2:] if len(argv) > 1 else []
             cmds[cmd](argv)
