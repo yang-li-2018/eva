@@ -128,16 +128,17 @@ def main(argv=sys.argv[1:]):
             sys.exit(1)
         else:
             cmd = argv[1]
+            argv = argv[2:] if len(argv) > 1 else []
     else:
         namespace = 'core'
         cmd = argv[0]
+        argv = argv[1:] if len(argv) > 0 else []
 
     global MAP_COMMANDS
 
     if namespace in MAP_COMMANDS:
         cmds = MAP_COMMANDS[namespace]
         if cmd in cmds:
-            argv = argv[2:] if len(argv) > 1 else []
             cmds[cmd](argv)
             return
 

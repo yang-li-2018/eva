@@ -13,5 +13,4 @@ class Command(EvaManagementCommand):
 
     def run(self):
         load_models()
-        print('args = ', self.args)
         create_all(self.args.db_echo)
