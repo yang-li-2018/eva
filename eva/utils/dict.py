@@ -1,6 +1,17 @@
 from collections import namedtuple
 
 
+def convert_list(_list):
+    L = []
+    for x in _list:
+        if isinstance(x, dict):
+            L.append(convert(x))
+        elif isinstance(x, (list, tuple)):
+            L.append(convert_list(x))
+        else:
+            L.append(x)
+    return L
+
 def convert(dictionary):
     '''(递归)转换字典对象为 namedtuple 对象
     '''
@@ -8,6 +19,9 @@ def convert(dictionary):
     for key, value in dictionary.items():
         if isinstance(value, dict):
             dictionary[key] = convert(value)
+        elif isinstance(value, (list, tuple)):
+            dictionary[key] = convert_list(value)
+
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
 # 一个别名

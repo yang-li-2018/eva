@@ -61,14 +61,14 @@ def get_limit_objects(handler, model, q, args):
     # AFTER
     after = args.get('after')
     if after:
-        I = handler.db.query(model).filter_by(uid=after).first()
+        I = handler.db.query(model).filter_by(id=after).first()
         if I:
             q = q.filter(model.id > I.id)
 
     # BEFORE
     before = args.get('before')
     if before:
-        I = handler.db.query(model).filter_by(uid=before).first()
+        I = handler.db.query(model).filter_by(id=before).first()
         if I:
             q = q.filter(model.id < I.id)
 

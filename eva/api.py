@@ -38,6 +38,13 @@ class API(object):
             return dict_to_namedtuple(r.json())
         return r.text
 
+    def raw_request(self, method, path, **kwargs):
+        url = self.full_url(path)
+        r = self.session.request(method, url, **kwargs)
+        if 'Content-Type' in r.headers and 'application/json' in r.headers['Content-Type']:
+            return r.json()
+        return r.text
+
     def get(self, path, **kwargs):
         return self.request('GET', path, **kwargs)
 

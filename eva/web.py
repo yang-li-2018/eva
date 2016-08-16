@@ -58,6 +58,11 @@ class APIRequestHandler(tornado.web.RequestHandler):
     def db(self):
         return self.application.db_session()
 
+    @property
+    def es(self):
+        '''ElasticSearch'''
+        return self.application.es
+
     def on_finish(self):
         self.application.db_session.remove()
 

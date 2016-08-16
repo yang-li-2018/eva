@@ -101,6 +101,11 @@ class RequestHandler(tornado.web.RequestHandler):
                             sid=self.get_cookie('SID'))
         return self._api
 
+    # TODO: 默认不必放在这里
+    @property
+    def r(self):
+        return self.application.r
+
     def update_errors(self, api_response):
         '''更新错误信息'''
 

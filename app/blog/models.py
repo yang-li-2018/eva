@@ -136,9 +136,11 @@ class BlogCatalog(UIDMixin, ORMBase):
 
     @property
     def iuser(self):
-        return self.ibase.update({
+        d = self.ibase
+        d.update({
             "user": self.user.isimple
         })
+        return d
 
     @property
     def iowner(self):
@@ -232,8 +234,9 @@ class BlogArticle(UIDMixin, ORMBase):
             'created': rfc3339_string(self.created),
             'updated': rfc3339_string(self.updated),
             'tags': [t.iuser for t in self.tags],
-            'catalog': self.catalog.iuser if self.catalog_id else None,
-            'category': self.category.iuser if self.category_id else None,
+            'catalog': self.catalog.isimple if self.catalog_id else None,
+            'category': self.category.isimple if self.category_id else None,
+            'author': self.user.isimple,
         }
 
     @property
