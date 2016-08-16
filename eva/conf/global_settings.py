@@ -474,6 +474,16 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # The module to store se
 SESSION_FILE_PATH = None                                # Directory to store session files if using the file session module. If None, the backend will use a sensible default.
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'  # class to serialize session data
 
+####################
+# App User Session #
+####################
+USER_APP_SESSION_TOKEN_AGE = 60 * 60 * 24 * 7 * 2
+
+#######################
+# System User Session #
+#######################
+SYSTEM_APP_SESSION_TOKEN_AGE = 60 * 60 * 24 * 7 * 2
+
 #########
 # CACHE #
 #########
