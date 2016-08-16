@@ -5,6 +5,7 @@ import argparse
 
 from eva.utils.importlib import import_module
 from eva.conf import settings
+from eva.utils.findapps import App
 
 CURDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,10 +18,10 @@ def exec_command_file(filepath):
     global_namespace = {
         "__file__": filepath,
         "__name__": "__main__",
-        }
+    }
     with open(filepath, 'rb') as file:
         exec(compile(file.read(), filepath, 'exec'), global_namespace)
-    return global_namespace.get('Command') 
+    return global_namespace.get('Command')
 
 
 def load_commands():
@@ -28,27 +29,42 @@ def load_commands():
 
     if len(COMMANDS) == 0:
         dirs = [os.path.join(CURDIR, 'commands')]
+
+        for app_name in settings.INSTALLED_APPS:
+            app = App(app_name)
+
+            dc = os.path.join(app.abspath, 'management/commands')
+            if os.path.isdir(dc):
+                dirs.append(dc)
+
         dirs.extend(list(settings.MANAGEMENT_COMMAND_DIRS))
+
         for cmdDir in dirs:
+
+            if not os.path.isdir(cmdDir):
+                logging.warn('{0} is not a directory'.format(cmdDir))
+                continue
+
             for f in os.listdir(cmdDir):
                 if not f.endswith('.py'):
                     continue
-    
+
                 cmdFile = os.path.join(cmdDir, f)
                 Command = exec_command_file(cmdFile)
 
                 if not Command:
                     logging.warn('%s is not a Command Module!', cmdFile)
                     continue
-    
+
                 c = Command()
-    
+
                 if not (hasattr(c, 'cmd') and
                         hasattr(c, 'help') and
                         hasattr(c, 'run')):
-                    logging.warn('%s is not a Command Module!', os.path.join(CURDIR, f))
+                    logging.warn('%s is not a Command Module!',
+                                 os.path.join(CURDIR, f))
                     continue
-    
+
                 COMMANDS[c.cmd] = c
 
     return COMMANDS
