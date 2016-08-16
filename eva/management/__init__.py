@@ -4,6 +4,7 @@ import logging
 import argparse
 
 from eva.utils.importlib import import_module
+from eva.conf import settings
 
 CURDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -12,28 +13,43 @@ CURDIR = os.path.dirname(os.path.realpath(__file__))
 COMMANDS = {}
 
 
+def exec_command_file(filepath):
+    global_namespace = {
+        "__file__": filepath,
+        "__name__": "__main__",
+        }
+    with open(filepath, 'rb') as file:
+        exec(compile(file.read(), filepath, 'exec'), global_namespace)
+    return global_namespace.get('Command') 
+
+
 def load_commands():
     global COMMANDS
 
     if len(COMMANDS) == 0:
-        for f in os.listdir(os.path.join(CURDIR, 'commands')):
-            if not f.endswith('.py'):
-                continue
+        dirs = [os.path.join(CURDIR, 'commands')]
+        dirs.extend(list(settings.MANAGEMENT_COMMAND_DIRS))
+        for cmdDir in dirs:
+            for f in os.listdir(cmdDir):
+                if not f.endswith('.py'):
+                    continue
+    
+                cmdFile = os.path.join(cmdDir, f)
+                Command = exec_command_file(cmdFile)
 
-            m = import_module('eva.management.commands.{0}'.format(f[:-3]))
-            if not hasattr(m, 'Command'):
-                logging.warn('%s is not a Command Module!', os.path.join(CURDIR, f))
-                continue
-
-            c = m.Command()
-
-            if not (hasattr(c, 'cmd') and
-                    hasattr(c, 'help') and
-                    hasattr(c, 'run')):
-                logging.warn('%s is not a Command Module!', os.path.join(CURDIR, f))
-                continue
-
-            COMMANDS[c.cmd] = c
+                if not Command:
+                    logging.warn('%s is not a Command Module!', cmdFile)
+                    continue
+    
+                c = Command()
+    
+                if not (hasattr(c, 'cmd') and
+                        hasattr(c, 'help') and
+                        hasattr(c, 'run')):
+                    logging.warn('%s is not a Command Module!', os.path.join(CURDIR, f))
+                    continue
+    
+                COMMANDS[c.cmd] = c
 
     return COMMANDS
 
