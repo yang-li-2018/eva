@@ -11,7 +11,7 @@ CURDIR = os.path.dirname(os.path.realpath(__file__))
 
 
 # cache
-COMMANDS = {}
+MAP_COMMANDS = {}
 
 
 def exec_command_file(filepath):
@@ -24,50 +24,57 @@ def exec_command_file(filepath):
     return global_namespace.get('Command')
 
 
-def load_commands():
-    global COMMANDS
+def _load_commands(name, cmdDir):
 
-    if len(COMMANDS) == 0:
-        dirs = [os.path.join(CURDIR, 'commands')]
+    global MAP_COMMANDS
+
+    LOCAL_COMMANDS = {}
+
+    if not os.path.isdir(cmdDir):
+        logging.warn('{0} is not a directory'.format(cmdDir))
+        return
+
+    for f in os.listdir(cmdDir):
+        if not f.endswith('.py'):
+            continue
+
+        cmdFile = os.path.join(cmdDir, f)
+        Command = exec_command_file(cmdFile)
+
+        if not Command:
+            logging.warn('%s is not a Command Module!', cmdFile)
+            continue
+
+        c = Command()
+
+        if not (hasattr(c, 'cmd') and
+                hasattr(c, 'help') and
+                hasattr(c, 'run')):
+            logging.warn('%s is not a Command Module!',
+                         os.path.join(CURDIR, f))
+            continue
+
+        LOCAL_COMMANDS[c.cmd] = c
+
+    if LOCAL_COMMANDS:
+        MAP_COMMANDS[name] = LOCAL_COMMANDS
+
+
+def load_commands():
+    global MAP_COMMANDS
+
+    if len(MAP_COMMANDS) == 0:
+        _load_commands('core', os.path.join(CURDIR, 'commands'))
 
         for app_name in settings.INSTALLED_APPS:
             app = App(app_name)
 
             dc = os.path.join(app.abspath, 'management/commands')
             if os.path.isdir(dc):
-                dirs.append(dc)
+                _load_commands(app.fullname, dc)
 
-        dirs.extend(list(settings.MANAGEMENT_COMMAND_DIRS))
-
-        for cmdDir in dirs:
-
-            if not os.path.isdir(cmdDir):
-                logging.warn('{0} is not a directory'.format(cmdDir))
-                continue
-
-            for f in os.listdir(cmdDir):
-                if not f.endswith('.py'):
-                    continue
-
-                cmdFile = os.path.join(cmdDir, f)
-                Command = exec_command_file(cmdFile)
-
-                if not Command:
-                    logging.warn('%s is not a Command Module!', cmdFile)
-                    continue
-
-                c = Command()
-
-                if not (hasattr(c, 'cmd') and
-                        hasattr(c, 'help') and
-                        hasattr(c, 'run')):
-                    logging.warn('%s is not a Command Module!',
-                                 os.path.join(CURDIR, f))
-                    continue
-
-                COMMANDS[c.cmd] = c
-
-    return COMMANDS
+        for cmdDir in settings.MANAGEMENT_COMMAND_DIRS:
+            _load_commands('custom', cmdDir)
 
 
 def print_usage():
@@ -75,37 +82,52 @@ def print_usage():
 
 Usage:
 
-    {prog} SUBCOMMAND OPTIONS
+    {prog} BASENAME COMMAND OPTIONS
 
 Help:
 
     {prog} help | -h | --help
 
-Subcommand:
+Command:
+
 '''.format(prog=sys.argv[0]))
-    global COMMANDS
-    for k in COMMANDS:
-        c = COMMANDS[k]
-        print('    {cmd:16} {help}'.format(cmd=c.cmd, help=c.help))
-    print()
+    global MAP_COMMANDS
+    for name in MAP_COMMANDS:
+        print('[{0}]'.format(name))
+        cmds = MAP_COMMANDS[name]
+        for k in cmds:
+            c = cmds[k]
+            print('    {cmd:16} {help}'.format(cmd=c.cmd, help=c.help))
+        print('')
+
+    print('''
+Example:
+
+    # 同步/创建/初始化数据库
+    python3 manage.py core syncdb --db-echo
+''')
 
 
 def main(argv=sys.argv[1:]):
 
     load_commands()
 
-    if len(argv) == 0:
+    if len(argv) < 2:
         print_usage()
         sys.exit(1)
 
-    cmd = argv[0]
-    global COMMANDS
+    basename = argv[0]
+    cmd = argv[1]
+    global MAP_COMMANDS
 
-    if cmd in COMMANDS:
-        argv = argv[1:] if len(argv) > 1 else []
-        COMMANDS[cmd](argv)
+    if basename in MAP_COMMANDS:
+        cmds = MAP_COMMANDS[basename]
+        if cmd in cmds:
+            argv = argv[2:] if len(argv) > 1 else []
+            cmds[cmd](argv)
+            return
 
-    elif cmd in ['help', '-h', '--help']:
+    if cmd in ['help', '-h', '--help']:
         print_usage()
 
     else:
