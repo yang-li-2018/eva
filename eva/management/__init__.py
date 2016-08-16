@@ -104,11 +104,11 @@ Command:
 Example:
 
     # 同步/创建/初始化数据库
-    python3 manage.py core syncdb --db-echo
+    {prog} core syncdb --db-echo
 
     # core 类型的 namespace 可以省略，因此上一条命令等于
-    python3 manage.py syncdb --db-echo
-''')
+    {prog} manage.py syncdb --db-echo
+'''.format(prog=sys.argv[0]))
 
 
 def main(argv=sys.argv[1:]):
