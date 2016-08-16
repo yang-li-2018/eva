@@ -82,7 +82,7 @@ def print_usage():
 
 Usage:
 
-    {prog} BASENAME COMMAND OPTIONS
+    {prog} NAMESPACE COMMAND OPTIONS
 
 Help:
 
