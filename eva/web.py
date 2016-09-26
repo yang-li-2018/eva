@@ -6,7 +6,7 @@ import functools
 
 import tornado.web
 from tornado.escape import json_decode
-from tornado.web import decode_signed_value
+from tornado.web import HTTPError, decode_signed_value
 from tornado.log import app_log, gen_log
 from tornado import httputil
 
