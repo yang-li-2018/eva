@@ -13,7 +13,7 @@ PROJECT_ROOT = os.path.abspath(
 )
 
 INSTALLED_APPS = (
-    'app.auth',
+    'eva.contrib.app.auth',
     'app.hello',
 )
 

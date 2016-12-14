@@ -14,7 +14,7 @@ from tornado import httputil
 from eva.exceptions import EvaError
 
 # TODO: settings 里解决
-from app.auth.models import Session
+from eva.contrib.app.auth.models import Session
 
 # 定制 JSON Encoder
 # http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy

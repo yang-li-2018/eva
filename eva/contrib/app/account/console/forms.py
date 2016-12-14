@@ -12,7 +12,7 @@ from wtforms.fields import (
     IntegerField
 )
 
-from app.auth.models import GENDER_CHOICES
+from eva.contrib.app.auth.models import GENDER_CHOICES
 
 
 class ProfileEditForm(Form):

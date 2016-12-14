@@ -11,7 +11,7 @@ from eva.conf import settings
 from eva.orm import get_db_session
 from eva.management.common import EvaManagementCommand
 
-from app.auth.models import create_user
+from eva.contrib.app.auth.models import create_user
 
 
 def adduser(username, password, email, is_superuser=False):

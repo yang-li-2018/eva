@@ -2,7 +2,7 @@ from eva.web import APIRequestHandler, administrator
 from eva.utils.translation import ugettext_lazy as _
 from eva.sqlalchemy.list import admin_list_objects
 
-from app.auth.models import User
+from eva.contrib.app.auth.models import User
 
 from .forms import (
     ProfileEditForm, PasswordResetForm
