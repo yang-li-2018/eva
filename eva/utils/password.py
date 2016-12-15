@@ -127,7 +127,7 @@ if __name__ == '__main__':
                     'oi19njn4j',
                     'boiea+94204$' ]:
         if is_too_simple(string, blacklist_file):
-            print 'Simple: %s' % string
+            print('Simple: %s' % string)
         else:
-            print 'Safe: %s' % string
+            print('Safe: %s' % string)
 

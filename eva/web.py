@@ -13,8 +13,12 @@ from tornado import httputil
 # Import eva module
 from eva.exceptions import EvaError
 
-# TODO: settings 里解决
-from eva.contrib.app.auth.models import Session
+from eva.conf import settings
+Session = settings.BACKENDS.get("Session")
+if not Session:
+    # FIXME! 自动使用 eva.contrib.app.auth 作为 auth
+    #from eva.contrib.app.auth.models import Session
+    raise "you must define BACKENDS in conf/settings.py"
 
 # 定制 JSON Encoder
 # http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy

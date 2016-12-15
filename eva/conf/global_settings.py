@@ -678,3 +678,9 @@ GENDER_CHOICES = (
 
 DEFAULT_PAGE_SIZE = 12
 MANAGEMENT_COMMAND_DIRS = ()
+
+BACKENDS = {
+    # FIXME! 自动使用 eva.contrib.app.auth
+    # from eva.contrib.app.auth.models import Session
+    # "Session": Session,
+}

@@ -51,7 +51,7 @@ if __name__ == '__main__':
                     u'日本' ]:
         r, i, m = has_illegal_chars(string, blacklist_file)
         if r:
-            print 'Illegal chars: %s IN LINE "%s"' % (i, m)
+            print('Illegal chars: %s IN LINE "%s"' % (i, m))
         else:
-            print 'safe: %s' % string
+            print('safe: %s' % string)
 
