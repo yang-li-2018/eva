@@ -1,6 +1,9 @@
 FROM python:latest
 MAINTAINER lijian@ooclab.com
 
+ENV PATH /usr/local/bin:$PATH
+ENV LANG en_US.UTF-8
+
 RUN apt-get update -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y vim tree curl net-tools iputils-ping dstat htop \
