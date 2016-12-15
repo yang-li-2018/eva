@@ -2,6 +2,8 @@
 
 A web framework base on tornado.
 
+[Wiki](https://github.com/ooclab/eva/wiki)
+
 ## Usage & Example
 
 ### Install
