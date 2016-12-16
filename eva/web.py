@@ -13,12 +13,8 @@ from tornado import httputil
 # Import eva module
 from eva.exceptions import EvaError
 
-from eva.conf import settings
-Session = settings.BACKENDS.get("Session")
-if not Session:
-    # FIXME! 自动使用 eva.contrib.app.auth 作为 auth
-    #from eva.contrib.app.auth.models import Session
-    raise "you must define BACKENDS in conf/settings.py"
+from eva.utils.backend import load_auth_backend
+backend_auth = load_auth_backend()
 
 # 定制 JSON Encoder
 # http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy
@@ -86,7 +82,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                         # raise HTTPError(403, reason="fake_sid")
                         return
                     sid = sid.decode()
-                    s = self.db.query(Session).filter_by(sid=sid).first()
+                    s = self.db.query(backend_auth.models.Session).filter_by(sid=sid).first()
                     if s:
                         if s.is_valid():
                             s.user.last_active = datetime.datetime.utcnow()
