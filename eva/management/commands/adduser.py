@@ -11,13 +11,15 @@ from eva.conf import settings
 from eva.orm import get_db_session
 from eva.management.common import EvaManagementCommand
 
-from eva.contrib.app.auth.models import create_user
+from eva.utils.backend import load_auth_backend
+backend_auth = load_auth_backend()
 
 
 def adduser(username, password, email, is_superuser=False):
 
     db = get_db_session()
-    user = create_user(db,
+    user = backend_auth.models.create_user(
+                       db,
                        username=username,
                        password=password,
                        email=email)

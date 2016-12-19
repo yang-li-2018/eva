@@ -38,6 +38,9 @@ def _load_commands(name, cmdDir):
         if not f.endswith('.py'):
             continue
 
+        if f.startswith('__'):
+            continue
+
         cmdFile = os.path.join(cmdDir, f)
         Command = exec_command_file(cmdFile)
 
@@ -107,7 +110,7 @@ Example:
     {prog} core syncdb --db-echo
 
     # core 类型的 namespace 可以省略，因此上一条命令等于
-    {prog} manage.py syncdb --db-echo
+    {prog} syncdb --db-echo
 '''.format(prog=sys.argv[0]))
 
 
