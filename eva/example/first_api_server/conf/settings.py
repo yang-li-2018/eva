@@ -16,8 +16,3 @@ INSTALLED_APPS = (
     'eva.contrib.app.auth',
     'app.hello',
 )
-
-from eva.contrib.app.auth.models import Session
-BACKENDS = {
-    "Session": Session,
-}
