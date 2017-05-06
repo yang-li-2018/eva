@@ -140,17 +140,14 @@ class APIRequestHandler(tornado.web.RequestHandler):
                           self.request, exc_info=(typ, value, tb))
 
     def show_debug(self):
-        print("\n-- request:")
-        print(self.request)
-        print("\n-- request headers:")
-        pprint.pprint(self.request.headers)
-        print("\n-- request body:")
+        logging.debug("--- request:\n%s", self.request)
+        logging.debug("--- request headers:\n%s", self.request.headers)
         json_body = self.get_body_json()
         if json_body:
-            pprint.pprint(json_body)
+            body = pprint.pformat(json_body, indent=4)
         else:
-            print(self.request.body)
-        # print("\n")
+            body = self.request.body
+        logging.debug("--- request body:\n%s", body)
 
 
 def authenticated(method):
