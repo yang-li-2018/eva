@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
 # About name_local: capitalize it as if your language name was appearing

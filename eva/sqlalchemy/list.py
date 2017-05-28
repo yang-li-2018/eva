@@ -1,6 +1,6 @@
+from gettext import gettext as _
 from sqlalchemy import desc, asc
 
-from eva.utils.translation import ugettext_lazy as _
 from eva.exceptions import EvaError
 
 
@@ -135,8 +135,7 @@ def get_filters(
         after=None,
         before=None,
         page_size=12,
-        current_page=1
-    ):
+        current_page=1):
     d = {
         'sort_by': handler.get_argument('sb', sort_by),
         'sort_direction': handler.get_argument('sd', sort_direction),

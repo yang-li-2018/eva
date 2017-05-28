@@ -4,6 +4,7 @@ from eva.utils import six
 
 
 class MergeDict(object):
+
     """
     A simple class for creating new "virtual" dictionaries that actually look
     up values in more than one dictionary, passed in the constructor.
@@ -11,6 +12,7 @@ class MergeDict(object):
     If a key appears in more than one of the given dictionaries, only the
     first occurrence will be used.
     """
+
     def __init__(self, *dicts):
         self.dicts = dicts
 
@@ -115,7 +117,9 @@ class MergeDict(object):
         dictreprs = ', '.join(repr(d) for d in self.dicts)
         return '%s(%s)' % (self.__class__.__name__, dictreprs)
 
+
 class SortedDict(dict):
+
     """
     A dictionary that keeps its keys in the order in which they're inserted.
     """
@@ -258,10 +262,13 @@ class SortedDict(dict):
         super(SortedDict, self).clear()
         self.keyOrder = []
 
+
 class MultiValueDictKeyError(KeyError):
     pass
 
+
 class MultiValueDict(dict):
+
     """
     A subclass of dictionary customized to handle multiple values for the
     same key.
@@ -283,6 +290,7 @@ class MultiValueDict(dict):
     which returns a list for every key, even though most Web forms submit
     single name-value pairs.
     """
+
     def __init__(self, key_to_list_mapping=()):
         super(MultiValueDict, self).__init__(key_to_list_mapping)
 
@@ -438,7 +446,8 @@ class MultiValueDict(dict):
                     for key, value in other_dict.items():
                         self.setlistdefault(key).append(value)
                 except TypeError:
-                    raise ValueError("MultiValueDict.update() takes either a MultiValueDict or dictionary")
+                    raise ValueError(
+                        "MultiValueDict.update() takes either a MultiValueDict or dictionary")
         for key, value in six.iteritems(kwargs):
             self.setlistdefault(key).append(value)
 
@@ -450,6 +459,7 @@ class MultiValueDict(dict):
 
 
 class ImmutableList(tuple):
+
     """
     A tuple-like object that raises useful errors when it is asked to mutate.
 
@@ -479,21 +489,23 @@ class ImmutableList(tuple):
             raise AttributeError(self.warning)
 
     # All list mutation functions complain.
-    __delitem__  = complain
+    __delitem__ = complain
     __delslice__ = complain
-    __iadd__     = complain
-    __imul__     = complain
-    __setitem__  = complain
+    __iadd__ = complain
+    __imul__ = complain
+    __setitem__ = complain
     __setslice__ = complain
-    append       = complain
-    extend       = complain
-    insert       = complain
-    pop          = complain
-    remove       = complain
-    sort         = complain
-    reverse      = complain
+    append = complain
+    extend = complain
+    insert = complain
+    pop = complain
+    remove = complain
+    sort = complain
+    reverse = complain
+
 
 class DictWrapper(dict):
+
     """
     Wraps accesses to a dictionary so that certain values (those starting with
     the specified prefix) are passed through a function before being returned.
@@ -502,6 +514,7 @@ class DictWrapper(dict):
     Used by the SQL construction code to ensure that values are correctly
     quoted before being used.
     """
+
     def __init__(self, data, func, prefix):
         super(DictWrapper, self).__init__(data)
         self.func = func

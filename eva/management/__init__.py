@@ -1,11 +1,8 @@
 import os
 import sys
 import logging
-import argparse
 
-from eva.utils.importlib import import_module
 from eva.conf import settings
-from eva.utils.findapps import App
 
 CURDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -68,13 +65,6 @@ def load_commands():
 
     if len(MAP_COMMANDS) == 0:
         _load_commands('core', os.path.join(CURDIR, 'commands'))
-
-        for app_name in settings.INSTALLED_APPS:
-            app = App(app_name)
-
-            dc = os.path.join(app.abspath, 'management/commands')
-            if os.path.isdir(dc):
-                _load_commands(app.fullname, dc)
 
         for cmdDir in settings.MANAGEMENT_COMMAND_DIRS:
             _load_commands('custom', cmdDir)

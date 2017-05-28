@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
 import codecs
@@ -15,6 +14,7 @@ if six.PY3:
 
 
 class DjangoUnicodeDecodeError(UnicodeDecodeError):
+
     def __init__(self, obj, *args):
         self.obj = obj
         UnicodeDecodeError.__init__(self, *args)
@@ -22,7 +22,7 @@ class DjangoUnicodeDecodeError(UnicodeDecodeError):
     def __str__(self):
         original = UnicodeDecodeError.__str__(self)
         return '%s. You passed in %r (%s)' % (original, self.obj,
-                type(self.obj))
+                                              type(self.obj))
 
 
 # For backwards compatibility. (originally in Django, then added to six 1.9)
@@ -43,7 +43,7 @@ def smart_text(s, encoding='utf-8', strings_only=False, errors='strict'):
 
 
 _PROTECTED_TYPES = six.integer_types + (type(None), float, Decimal,
-    datetime.datetime, datetime.date, datetime.time)
+                                        datetime.datetime, datetime.date, datetime.time)
 
 
 def is_protected_type(obj):
@@ -182,7 +182,7 @@ def iri_to_uri(iri):
     # The list of safe characters here is constructed from the "reserved" and
     # "unreserved" characters specified in sections 2.2 and 2.3 of RFC 3986:
     #     reserved    = gen-delims / sub-delims
-    #     gen-delims  = ":" / "/" / "?" / "#" / "[" / "]" / "@"
+    # gen-delims  = ":" / "/" / "?" / "#" / "[" / "]" / "@"
     #     sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
     #                   / "*" / "+" / "," / ";" / "="
     #     unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"

@@ -9,7 +9,8 @@ from hashlib import sha1
 char_alphabet = "abcdefghijklmnopqrstuvwxyz"
 char_digit = "0123456789"
 
-def random_ascii(length, digit=True, ignorecase=False, drops=None ):
+
+def random_ascii(length, digit=True, ignorecase=False, drops=None):
 
     global char_alphabet, char_digit
 
@@ -53,15 +54,15 @@ def random_digit(length):
 
 
 def random_sha1():
-    s = sha1( os.urandom(256) )
-    s.update( str(time.time()) )
-    s.update( str(random.randrange(1, 100000000)) )
+    s = sha1(os.urandom(256))
+    s.update(str(time.time()))
+    s.update(str(random.randrange(1, 100000000)))
     key = s.hexdigest()
     return key
 
 
 def gen_uuid():
-    return  str(uuid.uuid4())
+    return str(uuid.uuid4())
 
 
 # 参考： salt/utils/__init__.py
@@ -87,12 +88,10 @@ def gen_mac(prefix='AC:DE:48'):
         prefix,
         random.randint(0, 0xff),
         random.randint(0, 0xff),
-        random.randint(0, 0xff) )
-
+        random.randint(0, 0xff))
 
 
 if __name__ == '__main__':
 
     print('random_sha1()    : %s' % random_sha1())
     print('random_ascii(40) : %s' % random_ascii(40))
-

@@ -1,27 +1,28 @@
-# coding: utf-8
-
 """
-Settings and configuration for Django.
+Settings and configuration for Eva.
 
-Values will be read from the module specified by the DJANGO_SETTINGS_MODULE environment
-variable, and then from django.conf.global_settings; see the global settings file for
-a list of all possible variables.
+from eva.conf import settings
+
+配置读取优先级：
+1. 环境变量（方便docker运行环境的配置覆盖）
+2. settings.py
+3. global_settings.py
 """
 
 import logging
 import os
 import sys
-import time     # Needed for Windows
 import warnings
+import importlib
 
 from eva.conf import global_settings
 from eva.exceptions import ImproperlyConfigured
 from eva.utils.functional import LazyObject, empty
-from eva.utils import importlib
-from eva.utils.module_loading import import_by_path
 from eva.utils import six
 
 ENVIRONMENT_VARIABLE = "EVA_SETTINGS_MODULE"
+# FIXME!
+os.environ['EVA_SETTINGS_MODULE'] = 'codebase.settings'
 
 
 class LazySettings(LazyObject):
@@ -38,7 +39,7 @@ class LazySettings(LazyObject):
         """
         try:
             settings_module = os.environ[ENVIRONMENT_VARIABLE]
-            if not settings_module: # If it's set but is an empty string.
+            if not settings_module:  # If it's set but is an empty string.
                 raise KeyError
         except KeyError:
             desc = ("setting %s" % name) if name else "settings"
@@ -110,11 +111,6 @@ class BaseSettings(object):
     Common logic for settings whether set by a module or by the user.
     """
     def __setattr__(self, name, value):
-        if name in ("MEDIA_URL", "STATIC_URL") and value and not value.endswith('/'):
-            raise ImproperlyConfigured("If set, %s must end with a slash" % name)
-        elif name == "ALLOWED_INCLUDE_ROOTS" and isinstance(value, six.string_types):
-            raise ValueError("The ALLOWED_INCLUDE_ROOTS setting must be set "
-                "to a tuple, not a string.")
         object.__setattr__(self, name, value)
 
 
@@ -153,18 +149,6 @@ class Settings(BaseSettings):
 
         if not self.SECRET_KEY:
             raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
-
-        if hasattr(time, 'tzset') and self.TIME_ZONE:
-            # When we can, attempt to validate the timezone. If we can't find
-            # this file, no check happens and it's harmless.
-            zoneinfo_root = '/usr/share/zoneinfo'
-            if (os.path.exists(zoneinfo_root) and not
-                    os.path.exists(os.path.join(zoneinfo_root, *(self.TIME_ZONE.split('/'))))):
-                raise ValueError("Incorrect timezone setting: %s" % self.TIME_ZONE)
-            # Move the time zone info into os.environ. See ticket #2315 for why
-            # we don't do this unconditionally (breaks Windows).
-            os.environ['TZ'] = self.TIME_ZONE
-            time.tzset()
 
 
 class UserSettingsHolder(BaseSettings):

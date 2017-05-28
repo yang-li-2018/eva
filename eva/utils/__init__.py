@@ -1,6 +1,3 @@
-# coding: UTF-8
-# eva.utils 模块
-
 import hashlib
 import pprint
 
@@ -57,7 +54,6 @@ def fopen(*args, **kwargs):
 
 
 def file_md5(path):
-
     '''计算指定文件的 md5 值
 
     '''
@@ -80,10 +76,10 @@ def file_md5(path):
 
 
 def yprint(obj):
-    return pprint.PrettyPrinter().pformat( obj )
+    return pprint.PrettyPrinter().pformat(obj)
 
 
-def yprint_dict( d ):
+def yprint_dict(d):
 
     max_klen = 0
 

@@ -1,12 +1,11 @@
-# coding: UTF-8
+import requests
+import json
 
-import requests, json
+template_send_url = "http://sendcloud.sohu.com/webapi/mail.send_template.json"
 
 
 class SendCloud(object):
     """使用 sendcloud.sohu.com MDS"""
-
-    template_send_url = "http://sendcloud.sohu.com/webapi/mail.send_template.json"
 
     def __init__(self, api_user, api_key, from_addr, fromname=None, replyto=None):
         self.api_user = api_user

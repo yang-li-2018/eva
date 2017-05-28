@@ -7,16 +7,21 @@ be interpreted by the HTML engine (e.g. '<') into the appropriate entities.
 from eva.utils.functional import curry, Promise
 from eva.utils import six
 
+
 class EscapeData(object):
     pass
 
+
 class EscapeBytes(bytes, EscapeData):
+
     """
     A byte string that should be HTML-escaped when output.
     """
     pass
 
+
 class EscapeText(six.text_type, EscapeData):
+
     """
     A unicode string object that should be HTML-escaped when output.
     """
@@ -29,14 +34,18 @@ else:
     # backwards compatibility for Python 2
     EscapeUnicode = EscapeText
 
+
 class SafeData(object):
     pass
 
+
 class SafeBytes(bytes, SafeData):
+
     """
     A bytes subclass that has been specifically marked as "safe" (requires no
     further escaping) for HTML output purposes.
     """
+
     def __add__(self, rhs):
         """
         Concatenating a safe byte string with another safe byte string or safe
@@ -64,11 +73,14 @@ class SafeBytes(bytes, SafeData):
 
     decode = curry(_proxy_method, method=bytes.decode)
 
+
 class SafeText(six.text_type, SafeData):
+
     """
     A unicode (Python 2) / str (Python 3) subclass that has been specifically
     marked as "safe" for HTML output purposes.
     """
+
     def __add__(self, rhs):
         """
         Concatenating a safe unicode string with another safe byte string or
@@ -101,6 +113,7 @@ else:
     # backwards compatibility for Python 2
     SafeUnicode = SafeText
 
+
 def mark_safe(s):
     """
     Explicitly mark a string as safe for (HTML) output purposes. The returned
@@ -115,6 +128,7 @@ def mark_safe(s):
     if isinstance(s, (six.text_type, Promise)):
         return SafeText(s)
     return SafeString(str(s))
+
 
 def mark_for_escaping(s):
     """
@@ -131,4 +145,3 @@ def mark_for_escaping(s):
     if isinstance(s, (six.text_type, Promise)):
         return EscapeText(s)
     return EscapeBytes(bytes(s))
-

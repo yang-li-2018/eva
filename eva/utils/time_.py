@@ -6,8 +6,7 @@ import datetime
 import dateutil
 
 
-def htime( t ):
-
+def htime(t):
     ''' return a human ago aime '''
 
     if not isinstance(t, datetime.datetime):
@@ -34,7 +33,7 @@ def htime( t ):
         s = u'%s秒前' % ago.seconds
 
     else:
-        #s = _('%s microseconds ago') % ago.microseconds
+        # s = _('%s microseconds ago') % ago.microseconds
         s = u'刚刚'
 
     return s
@@ -49,7 +48,6 @@ def ftime(t, f='%Y-%m-%d %H:%M:%S'):
 
 
 def after_days(days):
-
     '''返回指定天数后的时间
 
     '''
@@ -59,7 +57,6 @@ def after_days(days):
 
 
 def after_seconds(seconds):
-
     '''返回指定秒数后的时间
 
     '''
@@ -69,7 +66,6 @@ def after_seconds(seconds):
 
 
 def seconds(dt):
-
     '''转换 datetime 时间为秒（UNIX）
     '''
     if dt:
@@ -110,3 +106,7 @@ def utc_rfc3339_parse(s):
         return datetime.datetime.strptime(s.rstrip('Zz'), '%Y-%m-%dT%H:%M:%S.%f')
     else:
         return datetime.datetime.strptime(s.rstrip('Zz'), '%Y-%m-%dT%H:%M:%S')
+
+
+def rfc3339_string_utcnow():
+    return datetime.datetime.utcnow().isoformat('T') + 'Z'
