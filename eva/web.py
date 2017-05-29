@@ -14,8 +14,6 @@ from eva.exceptions import EvaError
 # 定制 JSON Encoder
 # http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy
 # https://docs.djangoproject.com/en/1.8/topics/serialization/
-from eva.utils.functional import Promise
-from eva.utils.encoding import force_text
 
 
 class APIRequestHandler(tornado.web.RequestHandler):
