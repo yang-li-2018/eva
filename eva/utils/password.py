@@ -36,8 +36,8 @@ def is_order(password):
             c -= 1
         return True
 
-    if ( positive_sequence() or 
-         inverted_sequence() ):
+    if (positive_sequence() or
+       inverted_sequence()):
         return True
 
     return False
@@ -46,7 +46,7 @@ def is_order(password):
 def complex_factor(password):
 
     sum_char = 0
-    sum_int  = 0
+    sum_int = 0
     sum_spec = 0
 
     for x in password:
@@ -71,7 +71,7 @@ def complex_factor(password):
             count += 1
 
     return count
-    
+
 
 def is_too_simple(password, simple_password_file=None):
 
@@ -82,7 +82,7 @@ def is_too_simple(password, simple_password_file=None):
         return True
 
     # 简单的重复不安全
-    if password[0] * len(password) == password :
+    if password[0] * len(password) == password:
         return True
 
     # 复杂数
@@ -115,19 +115,18 @@ if __name__ == '__main__':
     import sys
     blacklist_file = sys.argv[1]
 
-    for string in [ '666666666',
-                    '123456',
-                    '1234568888',
-                    '654321',
-                    '6543219999',
-                    'abc123',
-                    '3456789',
-                    'abc18937',
-                    'greatfirewall',
-                    'oi19njn4j',
-                    'boiea+94204$' ]:
+    for string in ['666666666',
+                   '123456',
+                   '1234568888',
+                   '654321',
+                   '6543219999',
+                   'abc123',
+                   '3456789',
+                   'abc18937',
+                   'greatfirewall',
+                   'oi19njn4j',
+                   'boiea+94204$']:
         if is_too_simple(string, blacklist_file):
             print('Simple: %s' % string)
         else:
             print('Safe: %s' % string)
-

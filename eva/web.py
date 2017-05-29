@@ -1,27 +1,19 @@
 import json
-import datetime
 import logging
 import pprint
 import functools
 
 import tornado.web
 from tornado.escape import json_decode
-from tornado.web import HTTPError, decode_signed_value
 from tornado.log import app_log, gen_log
 from tornado import httputil
 
 # Import eva module
 from eva.exceptions import EvaError
 
-from eva.utils.backend import load_auth_backend
-backend_auth = load_auth_backend()
-
 # 定制 JSON Encoder
 # http://stackoverflow.com/questions/19734724/django-is-not-json-serializable-when-using-ugettext-lazy
 # https://docs.djangoproject.com/en/1.8/topics/serialization/
-from eva.utils.functional import Promise
-from eva.utils.encoding import force_text
-from eva.core.serializers.json import DjangoJSONEncoder
 
 
 class APIRequestHandler(tornado.web.RequestHandler):
@@ -34,7 +26,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
             d.update(kwargs)
         if errors:
             d["errors"] = errors
-        self.write(json.dumps(d, cls=LazyJSONEncoder))
+        self.write(json.dumps(d))
 
     def fail_404(self, error="fail", errors=None, **kwargs):
         return self.fail(error, errors, status=404, **kwargs)
@@ -46,7 +38,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
             d["status"] = "success"
 
         self.set_header("Content-Type", "application/json; charset=utf-8")
-        self.write(json.dumps(d, cls=LazyJSONEncoder))
+        self.write(json.dumps(d))
 
     def get_body_json(self):
         try:
@@ -65,34 +57,6 @@ class APIRequestHandler(tornado.web.RequestHandler):
 
     def on_finish(self):
         self.application.db_session.remove()
-
-    def get_current_user(self):
-        self.require_setting("secret_key", "secure key")
-        secret = self.application.settings["secret_key"]
-        auth = self.request.headers.get('Authorization')
-        if auth:
-            x = auth.split()
-            if len(x) == 2:
-                # idea: 可以根据不同的 x[0] 使用不同的验证机制
-                if x[0] == 'OOC':
-                    sid = decode_signed_value(secret, "Sid", x[1])
-                    if not sid:
-                        logging.warning("fake sid!")
-                        # FIXME!
-                        # raise HTTPError(403, reason="fake_sid")
-                        return
-                    sid = sid.decode()
-                    s = self.db.query(backend_auth.models.Session).filter_by(sid=sid).first()
-                    if s:
-                        if s.is_valid():
-                            s.user.last_active = datetime.datetime.utcnow()
-                            s.refresh_expired()
-                            return s.user
-                        else:
-                            # FIXME!
-                            # raise HTTPError(403, reason="session_expired")
-                            logging.warn('%s: session is expired',
-                                         s.user.username)
 
     def write_error(self, status_code, **kwargs):
         """定制出错返回
@@ -140,17 +104,14 @@ class APIRequestHandler(tornado.web.RequestHandler):
                           self.request, exc_info=(typ, value, tb))
 
     def show_debug(self):
-        print("\n-- request:")
-        print(self.request)
-        print("\n-- request headers:")
-        pprint.pprint(self.request.headers)
-        print("\n-- request body:")
+        logging.debug("--- request:\n%s", self.request)
+        logging.debug("--- request headers:\n%s", self.request.headers)
         json_body = self.get_body_json()
         if json_body:
-            pprint.pprint(json_body)
+            body = pprint.pformat(json_body, indent=4)
         else:
-            print(self.request.body)
-        # print("\n")
+            body = self.request.body
+        logging.debug("--- request body:\n%s", body)
 
 
 def authenticated(method):
@@ -213,11 +174,3 @@ class HTTPError(Exception):
             return message + " (" + (self.log_message % self.args) + ")"
         else:
             return message
-
-
-class LazyJSONEncoder(DjangoJSONEncoder):
-
-    def default(self, obj):
-        if isinstance(obj, Promise):
-            return force_text(obj)
-        return super(LazyJSONEncoder, self).default(obj)

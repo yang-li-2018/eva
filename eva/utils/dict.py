@@ -12,6 +12,7 @@ def convert_list(_list):
             L.append(x)
     return L
 
+
 def convert(dictionary):
     '''(递归)转换字典对象为 namedtuple 对象
     '''

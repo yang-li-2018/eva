@@ -1,15 +1,10 @@
-# coding: UTF-8
-
 from sqlalchemy import (
     Column,
-    Integer,
-    String,
-    ForeignKey
+    String
 )
 
 from sqlalchemy.ext.declarative import declared_attr
 
-from eva.utils.translation import ugettext_lazy as _
 from eva.utils.random_ import random_ascii
 
 
@@ -26,7 +21,7 @@ class UIDMixin(object):
 
     @declared_attr
     def uid(cls):
-        return Column(String(8), nullable=False, unique=True, doc=_("Unique Identifier"))
+        return Column(String(8), nullable=False, unique=True)
 
     @classmethod
     def gen_uid(cls, db):

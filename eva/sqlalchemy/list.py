@@ -1,6 +1,6 @@
+from gettext import gettext as _
 from sqlalchemy import desc, asc
 
-from eva.utils.translation import ugettext_lazy as _
 from eva.exceptions import EvaError
 
 
@@ -126,15 +126,24 @@ def admin_list_objects(handler, model, q):
     }
 
 
-def get_filters(handler):
+def get_filters(
+        handler,
+        sort_by="id",
+        sort_direction="desc",
+        like_k=None,
+        like_v=None,
+        after=None,
+        before=None,
+        page_size=12,
+        current_page=1):
     d = {
-        'sort_by': handler.get_argument('sb', "id"),
-        'sort_direction': handler.get_argument('sd', "desc"),
-        'like_k': handler.get_argument('lk', None),
-        'like_v': handler.get_argument('lv', None),
-        'after': handler.get_argument('after', None),
-        'before': handler.get_argument('before', None),
-        'page_size': int(handler.get_argument('lm', 12)),
-        'current_page': int(handler.get_argument('p', 1)),
+        'sort_by': handler.get_argument('sb', sort_by),
+        'sort_direction': handler.get_argument('sd', sort_direction),
+        'like_k': handler.get_argument('lk', like_k),
+        'like_v': handler.get_argument('lv', like_v),
+        'after': handler.get_argument('after', after),
+        'before': handler.get_argument('before', before),
+        'page_size': int(handler.get_argument('lm', page_size)),
+        'current_page': int(handler.get_argument('p', current_page)),
     }
     return {x: d[x] for x in d if d[x]}
