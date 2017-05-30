@@ -1,6 +1,6 @@
 from eva.management.common import EvaManagementCommand
 from eva.management.db import load_models
-from eva.orm import create_all
+from eva.sqlalchemy.orm import create_all
 
 
 class Command(EvaManagementCommand):

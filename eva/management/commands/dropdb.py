@@ -2,7 +2,7 @@ import sys
 
 from eva.management.common import EvaManagementCommand
 from eva.management.db import load_models
-from eva.orm import drop_all
+from eva.sqlalchemy.orm import drop_all
 
 
 class Command(EvaManagementCommand):

@@ -17,6 +17,11 @@ def get_db_session():
     return Session
 
 
+def get_db():
+    db_session = get_db_session()
+    return db_session()
+
+
 def create_all(echo=False):
 
     DB_URI = eva.utils.db.get_db_uri()
