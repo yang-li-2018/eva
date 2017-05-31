@@ -1,8 +1,5 @@
-# coding: utf-8
-
 import os
 from eva.conf import settings
-from eva.exceptions import WebDBError
 
 
 def get_db_uri():
@@ -11,9 +8,11 @@ def get_db_uri():
 
     http://docs.sqlalchemy.org/en/latest/core/engines.html
     '''
+    if settings.DB_URI:
+        return settings.DB_URI
 
     DB = settings.DB
-    engine = DB.get('engine')    
+    engine = DB.get('engine')
 
     if engine == 'sqlite':
         path = DB.get('path')
@@ -22,7 +21,7 @@ def get_db_uri():
 
         if not os.path.isabs(path):
             path = os.path.join(
-                settings.PROJECT_ROOT, path)
+                settings.ROOT_PATH, path)
 
         DB['path'] = path
         DB_URI = '{engine}:///{path}'
@@ -30,6 +29,5 @@ def get_db_uri():
     else:
         DB_URI = '{engine}://{username}:{password}' + \
                  '@{host}/{database}'
-
 
     return DB_URI.format(**settings.DB)

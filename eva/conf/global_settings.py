@@ -1,3 +1,9 @@
+import os
+import sys
+
+MAIN = sys.modules['__main__']
+ROOT_PATH = os.path.dirname(MAIN.__file__)
+
 # Default Eva settings. Override these with settings in the module
 # pointed-to by the EVA_SETTINGS_MODULE environment variable.
 EVA_SETTINGS_MODULE = "codebase.settings"
@@ -26,6 +32,7 @@ DB = {
     'username': '',
     'password': '',
 }
+DB_URI = ''
 
 MANAGEMENT_COMMAND_DIRS = ()
 
