@@ -34,7 +34,9 @@ DB = {
 }
 DB_URI = ''
 
-MANAGEMENT_COMMAND_DIRS = ()
+MANAGEMENT_COMMAND_DIRS = (
+    'codebase/management',
+)
 
 PACKAGE_NAME = 'MS'
 PACKAGE_VERSION = '1.0'

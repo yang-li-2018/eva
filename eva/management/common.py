@@ -1,14 +1,7 @@
-import os
 import argparse
 
 
 def apply_common_options(args):
-
-    # 用户配置文件模块路径
-    if args.settings.endswith('.py'):
-        args.settings = args.settings[:-3]
-
-    os.environ.setdefault("EVA_SETTINGS_MODULE", args.settings)
 
     import tornado.options
     tornado.options.options.logging = "debug" if args.debug else 'info'
@@ -22,16 +15,6 @@ class EvaManagementCommand(object):
         self.help = None
         self.args = None
 
-    @property
-    def is_development(self):
-        '''是否为开发/测试环境！
-        '''
-        # TODO: 更严格的检测！
-        return (
-            (self.args.settings.find('test') >= 0) or
-            (self.args.settings.find('dev') >= 0)
-        )
-
     def get_argument_parser(self):
         parser = argparse.ArgumentParser(prog=self.cmd)
         return parser
@@ -43,8 +26,6 @@ class EvaManagementCommand(object):
         parser = self.get_argument_parser()
 
         # 增加通用选项
-        parser.add_argument('--settings', default='settings',
-                            help='指定配置文件')
         parser.add_argument('-d', dest='debug', action='store_true',
                             help='show debug')
         parser.add_argument('--db-echo', action='store_true',

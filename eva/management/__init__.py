@@ -21,9 +21,7 @@ def exec_command_file(filepath):
     return global_namespace.get('Command')
 
 
-def _load_commands(name, cmdDir):
-
-    global MAP_COMMANDS
+def _load_commands(cmdDir):
 
     LOCAL_COMMANDS = {}
 
@@ -56,18 +54,21 @@ def _load_commands(name, cmdDir):
 
         LOCAL_COMMANDS[c.cmd] = c
 
-    if LOCAL_COMMANDS:
-        MAP_COMMANDS[name] = LOCAL_COMMANDS
+    return LOCAL_COMMANDS
 
 
 def load_commands():
     global MAP_COMMANDS
 
-    if len(MAP_COMMANDS) == 0:
-        _load_commands('core', os.path.join(CURDIR, 'commands'))
+    if len(MAP_COMMANDS) != 0:
+        return
 
-        for cmdDir in settings.MANAGEMENT_COMMAND_DIRS:
-            _load_commands('custom', cmdDir)
+    cmds = _load_commands(os.path.join(CURDIR, 'commands'))
+
+    for cmdDir in settings.MANAGEMENT_COMMAND_DIRS:
+        cmds.update(_load_commands(os.path.join(settings.ROOT_PATH, cmdDir)))
+
+    MAP_COMMANDS['core'] = cmds
 
 
 def print_usage():
@@ -115,7 +116,7 @@ def main(argv=sys.argv[1:]):
     namespace = argv[0]
 
     # nice hack!
-    if namespace.startswith('app.') or namespace == 'core':
+    if namespace.startswith('main') or namespace == 'core':
         if len(argv) < 2:
             print_usage()
             sys.exit(1)

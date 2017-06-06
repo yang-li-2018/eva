@@ -16,9 +16,8 @@ class Command(EvaManagementCommand):
     def run(self):
 
         if not self.args.ignore_env_check:
-            if not self.is_development:
-                print('dropdb 只能在开发/测试环境中使用!')
-                sys.exit(1)
+            print('dropdb 只能在开发/测试环境中使用!')
+            sys.exit(1)
 
         load_models()
         drop_all(self.args.db_echo)
