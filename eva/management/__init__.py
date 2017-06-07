@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import importlib
 
 from eva.conf import settings
 
@@ -24,10 +25,6 @@ def exec_command_file(filepath):
 def _load_commands(cmdDir):
 
     LOCAL_COMMANDS = {}
-
-    if not os.path.isdir(cmdDir):
-        logging.warn('{0} is not a directory'.format(cmdDir))
-        return
 
     for f in os.listdir(cmdDir):
         if not f.endswith('.py'):
@@ -65,8 +62,10 @@ def load_commands():
 
     cmds = _load_commands(os.path.join(CURDIR, 'commands'))
 
-    for cmdDir in settings.MANAGEMENT_COMMAND_DIRS:
-        cmds.update(_load_commands(os.path.join(settings.ROOT_PATH, cmdDir)))
+    mod = importlib.import_module(settings.MANAGEMENT_MODULE)
+    # TODO: _NamespacePath
+    cmdDir = os.path.realpath(mod.__path__._path[0])
+    cmds.update(_load_commands(cmdDir))
 
     MAP_COMMANDS['core'] = cmds
 

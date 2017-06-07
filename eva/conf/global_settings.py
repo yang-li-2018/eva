@@ -8,6 +8,7 @@ ROOT_PATH = os.path.dirname(MAIN.__file__)
 # pointed-to by the EVA_SETTINGS_MODULE environment variable.
 EVA_SETTINGS_MODULE = "codebase.settings"
 MODELS_MODULE = "codebase.models"
+MANAGEMENT_MODULE = 'codebase.management'
 
 ####################
 # CORE             #
@@ -33,10 +34,6 @@ DB = {
     'password': '',
 }
 DB_URI = ''
-
-MANAGEMENT_COMMAND_DIRS = (
-    'codebase/management',
-)
 
 PACKAGE_NAME = 'MS'
 PACKAGE_VERSION = '1.0'
