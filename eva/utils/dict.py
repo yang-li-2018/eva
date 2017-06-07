@@ -25,5 +25,6 @@ def convert(dictionary):
 
     return namedtuple('GenericDict', dictionary.keys())(**dictionary)
 
-# 一个别名
+# convert 别名
 dict_to_namedtuple = convert
+d2n = convert
