@@ -22,7 +22,7 @@ from eva.utils import six
 
 ENVIRONMENT_VARIABLE = "EVA_SETTINGS_MODULE"
 # FIXME!
-os.environ['EVA_SETTINGS_MODULE'] = 'codebase.settings'
+#os.environ['EVA_SETTINGS_MODULE'] = 'codebase.settings'
 
 
 class LazySettings(LazyObject):
